@@ -18,39 +18,33 @@
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HAMMER_LOADER } from '@angular/platform-browser';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { configureTestSuite } from 'ng-bullet';
-import { FormsModule } from '@angular/forms';
+
+import { NodesViewComponent } from './nodes-view.component';
 import {
   MatTableModule,
   MatPaginatorModule,
   MatDividerModule,
-  MatSortModule,
-  MatInputModule,
-  MatTooltipModule
+  MatSortModule
 } from '@angular/material';
-
-import { AppsViewComponent } from './apps-view.component';
 import { SchedulerService } from '@app/services/scheduler/scheduler.service';
+import { HAMMER_LOADER } from '@angular/platform-browser';
 import { MockSchedulerService, MockNgxSpinnerService } from '@app/testing/mocks';
 
-describe('AppsViewComponent', () => {
-  let component: AppsViewComponent;
-  let fixture: ComponentFixture<AppsViewComponent>;
+describe('NodesViewComponent', () => {
+  let component: NodesViewComponent;
+  let fixture: ComponentFixture<NodesViewComponent>;
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [AppsViewComponent],
+      declarations: [NodesViewComponent],
       imports: [
         NoopAnimationsModule,
-        FormsModule,
         MatTableModule,
         MatPaginatorModule,
         MatDividerModule,
-        MatSortModule,
-        MatInputModule,
-        MatTooltipModule
+        MatSortModule
       ],
       providers: [
         { provide: SchedulerService, useValue: MockSchedulerService },
@@ -61,7 +55,7 @@ describe('AppsViewComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AppsViewComponent);
+    fixture = TestBed.createComponent(NodesViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

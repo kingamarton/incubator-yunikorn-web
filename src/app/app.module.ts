@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule } from '@angular/forms';
 import {
   MatCardModule,
   MatTabsModule,
@@ -32,7 +33,9 @@ import {
   MatSidenavModule,
   MatTableModule,
   MatPaginatorModule,
-  MatSortModule
+  MatSortModule,
+  MatInputModule,
+  MatTooltipModule
 } from '@angular/material';
 
 import { envConfigFactory, EnvconfigService } from './services/envconfig/envconfig.service';
@@ -49,6 +52,7 @@ import { ContainerStatusComponent } from './components/container-status/containe
 import { ContainerHistoryComponent } from './components/container-history/container-history.component';
 import { QueueRackComponent } from './components/queue-rack/queue-rack.component';
 import { AppsViewComponent } from './components/apps-view/apps-view.component';
+import { NodesViewComponent } from './components/nodes-view/nodes-view.component';
 
 const appRoutes: Routes = [
   {
@@ -75,6 +79,11 @@ const appRoutes: Routes = [
         path: 'queues',
         component: QueuesViewComponent,
         data: { breadcrumb: 'Queues' }
+      },
+      {
+        path: 'nodes',
+        component: NodesViewComponent,
+        data: { breadcrumb: 'Nodes' }
       },
       {
         path: '',
@@ -104,13 +113,15 @@ const appRoutes: Routes = [
     ContainerStatusComponent,
     ContainerHistoryComponent,
     QueueRackComponent,
-    AppsViewComponent
+    AppsViewComponent,
+    NodesViewComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     NgxSpinnerModule,
+    FormsModule,
     MatCardModule,
     MatTabsModule,
     MatSelectModule,
@@ -121,6 +132,8 @@ const appRoutes: Routes = [
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatInputModule,
+    MatTooltipModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [

@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { MatPaginator, MatTableDataSource, MatSort } from '@angular/material';
+import { finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs/operators';
-import { MatPaginator, MatTableDataSource, PageEvent, MatSort } from '@angular/material';
+import { fromEvent } from 'rxjs';
 
 import { SchedulerService } from '@app/services/scheduler/scheduler.service';
-import { AppInfo, AppAllocation } from '@app/models/app-info.model';
-
-export interface ColumnDef {
-  colId: string;
-  colName: string;
-}
+import { AppInfo } from '@app/models/app-info.model';
+import { AllocationInfo } from '@app/models/alloc-info.model';
+import { ColumnDef } from '@app/models/column-def.model';
 
 @Component({
   selector: 'app-applications-view',
@@ -35,19 +33,22 @@ export interface ColumnDef {
   styleUrls: ['./apps-view.component.scss']
 })
 export class AppsViewComponent implements OnInit {
-  @ViewChild('jobsViewMatPaginator', { static: true }) appPaginator: MatPaginator;
+  @ViewChild('appsViewMatPaginator', { static: true }) appPaginator: MatPaginator;
   @ViewChild('allocationMatPaginator', { static: true }) allocPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) appSort: MatSort;
+  @ViewChild('searchInput', { static: true }) searchInput: ElementRef;
 
   appDataSource = new MatTableDataSource<AppInfo>([]);
   appColumnDef: ColumnDef[] = [];
   appColumnIds: string[] = [];
 
-  allocDataSource = new MatTableDataSource<AppAllocation>([]);
+  allocDataSource = new MatTableDataSource<AllocationInfo>([]);
   allocColumnDef: ColumnDef[] = [];
   allocColumnIds: string[] = [];
 
   selectedRow: AppInfo | null = null;
+  initialAppData: AppInfo[] = [];
+  searchText = '';
 
   constructor(private scheduler: SchedulerService, private spinner: NgxSpinnerService) {}
 
@@ -59,9 +60,9 @@ export class AppsViewComponent implements OnInit {
 
     this.appColumnDef = [
       { colId: 'applicationId', colName: 'Application ID' },
+      { colId: 'queueName', colName: 'Queue Name' },
       { colId: 'applicationState', colName: 'Application State' },
       { colId: 'usedResource', colName: 'Used Resource' },
-      { colId: 'queueName', colName: 'Queue Name' },
       { colId: 'partition', colName: 'Partition' },
       { colId: 'submissionTime', colName: 'Submission Time' }
     ];
@@ -89,14 +90,21 @@ export class AppsViewComponent implements OnInit {
         })
       )
       .subscribe(data => {
+        this.initialAppData = data;
         this.appDataSource.data = data;
+      });
+
+    fromEvent(this.searchInput.nativeElement, 'keyup')
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe(() => {
+        this.onSearchAppData();
       });
   }
 
   unselectAllRowsButOne(row: AppInfo) {
-    this.appDataSource.data.map(job => {
-      if (job !== row) {
-        job.isSelected = false;
+    this.appDataSource.data.map(app => {
+      if (app !== row) {
+        app.isSelected = false;
       }
     });
   }
@@ -114,12 +122,16 @@ export class AppsViewComponent implements OnInit {
     }
   }
 
-  onPaginatorChanged(page: PageEvent) {
+  removeRowSelection() {
     if (this.selectedRow) {
       this.selectedRow.isSelected = false;
       this.selectedRow = null;
       this.allocDataSource.data = [];
     }
+  }
+
+  onPaginatorChanged() {
+    this.removeRowSelection();
   }
 
   isAppDataSourceEmpty() {
@@ -128,5 +140,26 @@ export class AppsViewComponent implements OnInit {
 
   isAllocDataSourceEmpty() {
     return this.allocDataSource.data && this.allocDataSource.data.length === 0;
+  }
+
+  onClearSearch() {
+    this.searchText = '';
+    this.removeRowSelection();
+    this.appDataSource.data = this.initialAppData;
+  }
+
+  onSearchAppData() {
+    const searchTerm = this.searchText.trim().toLowerCase();
+
+    if (searchTerm) {
+      this.removeRowSelection();
+      this.appDataSource.data = this.initialAppData.filter(
+        data =>
+          data.applicationId.toLowerCase().includes(searchTerm) ||
+          data.queueName.toLowerCase().includes(searchTerm)
+      );
+    } else {
+      this.onClearSearch();
+    }
   }
 }

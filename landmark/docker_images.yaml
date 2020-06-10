@@ -17,10 +17,5 @@
 # under the License.
 #
 
-version: '3'
-services:
-  yunikornwebapp:
-    build: .
-    image: yunikorn/yunikorn:web-latest
-    ports:
-      - 9889:9889
+docker_images:
+  yunikorn-web: __registry__/yunikorn:web-

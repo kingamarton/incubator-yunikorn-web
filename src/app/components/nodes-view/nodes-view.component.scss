@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-.apps-view {
+.nodes-view {
   width: 100%;
   height: 100%;
   padding: 25px;
@@ -46,7 +46,7 @@
     font-size: 18px;
     margin-left: 10px;
   }
-  .app-allocations {
+  .node-allocations {
     margin-top: 40px;
     .mat-table {
       margin-top: 20px;
@@ -58,29 +58,5 @@
     color: #666;
     width: 100%;
     text-align: center;
-  }
-  .search-wrapper {
-    width: 500px;
-    input {
-      width: calc(100% - 22px);
-      color: #333;
-    }
-    .clear-btn {
-      outline: none;
-      border: none;
-      padding: 0 0 0 4px;
-      cursor: pointer;
-      background: transparent;
-      i {
-        font-size: 18px;
-        &:hover {
-          color: #f44336;
-        }
-      }
-    }
-    .search-icon {
-      margin-left: 4px;
-      font-size: 17px;
-    }
   }
 }
